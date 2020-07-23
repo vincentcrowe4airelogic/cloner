@@ -2,7 +2,7 @@
   "name": "@airelogic/cloner",
   "version": "1.0.0",
   "description": "",
-  "main": "clone.js",
+  "main": "lambda.js",
   "scripts": {
     "tsc": "tsc"
   },
@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/node": "^14.0.24",
     "serverless-plugin-typescript": "^1.1.9",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.6"
   },
   "dependencies": {
     "@types/archiver": "^3.1.0",

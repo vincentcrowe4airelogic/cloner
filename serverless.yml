@@ -2,9 +2,6 @@ service: bitbucket-sync
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
-plugins:
-  - serverless-plugin-typescript
-
 provider:
   name: aws
   runtime: nodejs12.x
