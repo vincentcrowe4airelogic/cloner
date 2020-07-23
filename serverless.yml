@@ -18,7 +18,7 @@ provider:
 functions:
 
   pullSourceCode:
-    handler: ./build/src/lambda.test
+    handler: ./.build/src/lambda.test
     memorySize: 128
     description: Test endpoint to check contents of webhook that bitbucket does    
     events:
