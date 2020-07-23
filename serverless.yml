@@ -2,6 +2,9 @@ service: bitbucket-sync
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
+plugins:
+  - serverless-plugin-typescript
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -18,7 +21,7 @@ provider:
 functions:
 
   pullSourceCode:
-    handler: ./.build/src/lambda.test
+    handler: src/lambda.test
     memorySize: 128
     description: Test endpoint to check contents of webhook that bitbucket does    
     events:
