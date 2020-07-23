@@ -1,0 +1,31 @@
+service: bitbucket-sync
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-plugin-typescript
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutItem        
+        - ssm:GetParameter
+        - ssm:GetParameters
+      Resource: "*"
+
+functions:
+
+  pullSourceCode:
+    handler: src/lambda.test
+    memorySize: 128
+    description: Test endpoint to check contents of webhook that bitbucket does    
+    events:
+        - http:
+            path: webhooks/bitbucket/
+            method: post
+            cors: true
