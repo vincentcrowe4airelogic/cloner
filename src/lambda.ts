@@ -29,8 +29,8 @@ export const repoToBucket = async (
     fs.writeFileSync("/tmp/ssh/key.prk", await getParameter(`/ssh/${repo}/prk`));
     fs.writeFileSync("/tmp/ssh/key.pub", await getParameter(`/ssh/${repo}/pub`));
     await Clone.clone(`ssh://user@bitbucket.org/${repo}.git`, "/tmp/repo", options);
-    zipDirectory("/tmp/repo", "./tmp/repo.zip");
-    const zipStream = fs.createReadStream("./tmp.repo.zip");
+    zipDirectory("/tmp/repo", "/tmp/repo.zip");
+    const zipStream = fs.createReadStream("/tmp/repo.zip");
 
     const { s3Stream, awaiter} = uploadFromStream(bucketName, "repo.zip");
     zipStream.pipe(s3Stream);
