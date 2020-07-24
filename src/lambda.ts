@@ -49,7 +49,7 @@ export const test = async (
 }
 
 const getParameter = (key: string) : Promise<string> => {
-    return ssm.getParameter({ Name: "/on-aire/api/" + name}).promise().then(
+    return ssm.getParameter({ Name: key}).promise().then(
             res => res.Parameter?.Value!
         )    
 }
