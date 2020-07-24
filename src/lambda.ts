@@ -8,8 +8,8 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 const ssm = new AWS.SSM();
 const s3 = new AWS.S3();
 
-const options : CloneOptions = {
-    fetchOpts: {
+const options : CloneOptions = {    
+    fetchOpts: {        
         callbacks: {
             certificateCheck: function() { return 0; },
             credentials: function() {
@@ -24,11 +24,12 @@ export const repoToBucket = async (
   ): Promise<APIGatewayProxyResult> => {
     const repo = process.env.REPO!;
     const bucketName = process.env.BUCKET!;
+    const branch = process.env.BRANCH!;
     fs.mkdirSync("/tmp/ssh");
     fs.mkdirSync("/tmp/repo");
     fs.writeFileSync("/tmp/ssh/key.prk", await getParameter(`/ssh/${repo}/prk`));
     fs.writeFileSync("/tmp/ssh/key.pub", await getParameter(`/ssh/${repo}/pub`));
-    await Clone.clone(`ssh://user@bitbucket.org/${repo}.git`, "/tmp/repo", options);
+    await Clone.clone(`ssh://user@bitbucket.org/${repo}.git`, "/tmp/repo", {...options, ...{checkoutBranch: branch}});
     await zipDirectory("/tmp/repo", "/tmp/repo.zip");
     const zipStream = fs.createReadStream("/tmp/repo.zip");
 
