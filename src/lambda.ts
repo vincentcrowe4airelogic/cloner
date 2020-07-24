@@ -23,8 +23,8 @@ export const repoToBucket = async (
   ): Promise<APIGatewayProxyResult> => {
     const repo = process.env.REPO!;
     const bucketName = process.env.BUCKET!;
-    fs.writeFileSync("./key.prk", await getParameter(`ssh/${repo}/prk`));
-    fs.writeFileSync("./key.pub", await getParameter(`ssh/${repo}/pub`));
+    fs.writeFileSync("./key.prk", await getParameter(`/ssh/${repo}/prk`));
+    fs.writeFileSync("./key.pub", await getParameter(`/ssh/${repo}/pub`));
     await Clone.clone(`ssh://user@bitbucket.org/${repo}.git`, "repo", options);
     zipDirectory("repo", "repo.zip");
     await s3.upload({
