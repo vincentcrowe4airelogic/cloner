@@ -17,9 +17,11 @@
   "dependencies": {
     "@types/archiver": "^3.1.0",
     "@types/aws-lambda": "^8.10.59",
+    "@types/lodash": "^4.14.158",
     "@types/nodegit": "^0.26.7",
     "archiver": "^4.0.2",
     "aws-sdk": "^2.717.0",
+    "lodash": "^4.17.19",
     "nodegit": "^0.26.5"
   }
 }

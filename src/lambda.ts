@@ -4,6 +4,7 @@ import stream from "stream";
 import archiver from "archiver";
 import AWS from "aws-sdk";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import get from "lodash/get";
 
 const ssm = new AWS.SSM();
 const s3 = new AWS.S3();
@@ -21,28 +22,40 @@ const options : CloneOptions = {
 
 export const repoToBucket = async (
   event: APIGatewayProxyEvent
-  ): Promise<APIGatewayProxyResult> => {
+  ): Promise<APIGatewayProxyResult> => {    
     const repo = process.env.REPO!;
     const bucketName = process.env.BUCKET!;
-    const branch = process.env.BRANCH!;
-    fs.mkdirSync("/tmp/ssh");
-    fs.mkdirSync("/tmp/repo");
-    fs.writeFileSync("/tmp/ssh/key.prk", await getParameter(`/ssh/${repo}/prk`));
-    fs.writeFileSync("/tmp/ssh/key.pub", await getParameter(`/ssh/${repo}/pub`));
-    await Clone.clone(`ssh://user@bitbucket.org/${repo}.git`, "/tmp/repo", {...options, ...{checkoutBranch: branch}});
-    await zipDirectory("/tmp/repo", "/tmp/repo.zip");
-    const zipStream = fs.createReadStream("/tmp/repo.zip");
+    const branches = process.env.BRANCHES!;
 
-    const { s3Stream, awaiter} = uploadFromStream(bucketName, "repo.zip");
-    zipStream.pipe(s3Stream);
+    const targetBranch = getTargetBranch(event);
 
-    await awaiter;
+    if (branches.split(",").indexOf(targetBranch) !== -1){
+      fs.mkdirSync("/tmp/ssh");
+      fs.mkdirSync("/tmp/repo");
+      fs.writeFileSync("/tmp/ssh/key.prk", await getParameter(`/ssh/${repo}/prk`));
+      fs.writeFileSync("/tmp/ssh/key.pub", await getParameter(`/ssh/${repo}/pub`));
+      await Clone.clone(`ssh://user@bitbucket.org/${repo}.git`, "/tmp/repo", {...options, ...{checkoutBranch: targetBranch}});
+      await zipDirectory("/tmp/repo", "/tmp/repo.zip");
+      const zipStream = fs.createReadStream("/tmp/repo.zip");
+
+      const { s3Stream, awaiter} = uploadFromStream(bucketName, `repo-${targetBranch}.zip`);
+      zipStream.pipe(s3Stream);
+
+      await awaiter;
+    } else {
+      console.log("No action for branch " + targetBranch);
+    }
     
     return {
       statusCode: 200,
       body: ""
     };
   }
+
+const getTargetBranch = (event: APIGatewayProxyEvent) : string => {
+  const payload = JSON.parse(event.body!);
+  return get(payload, "pullrequest.destination.branch")
+}
 
 const uploadFromStream = (bucketName: string, key: string) => {
   const s3Stream = new stream.PassThrough();
