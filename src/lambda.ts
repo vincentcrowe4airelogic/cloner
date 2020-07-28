@@ -54,9 +54,7 @@ export const repoToBucket = async (
 
 const getTargetBranch = (event: APIGatewayProxyEvent) : string => {
   const payload = JSON.parse(event.body!);
-  const branch = get(payload, "pullrequest.destination.branch")
-  console.log(JSON.stringify(branch));
-  return "none";
+  return get(payload, "pullrequest.destination.branch.name");
 }
 
 const uploadFromStream = (bucketName: string, key: string) => {
