@@ -5,6 +5,7 @@ import archiver from "archiver";
 import AWS from "aws-sdk";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import get from "lodash/get";
+import { sync as deleteFolderSync } from "rimraf"; 
 
 const ssm = new AWS.SSM();
 const s3 = new AWS.S3();
@@ -30,6 +31,7 @@ export const repoToBucket = async (
     const targetBranch = getTargetBranch(event);
 
     if (branches.split(",").indexOf(targetBranch) !== -1){
+      cleanFileSystem();
       fs.mkdirSync("/tmp/ssh");
       fs.mkdirSync("/tmp/repo");
       fs.writeFileSync("/tmp/ssh/key.prk", await getParameter(`/ssh/${repo}/prk`));
@@ -51,6 +53,16 @@ export const repoToBucket = async (
       body: ""
     };
   }
+
+const cleanFileSystem = () => {
+  try {
+    deleteFolderSync("/tmp/ssh");
+    deleteFolderSync("/tmp/repo");
+    fs.unlinkSync("/tmp/repo.zip");
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 const getTargetBranch = (event: APIGatewayProxyEvent) : string => {
   const payload = JSON.parse(event.body!);
