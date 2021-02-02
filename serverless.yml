@@ -1,6 +1,6 @@
 service: bitbucket-sync
 
-frameworkVersion: ">=1.1.0 <2.0.0"
+frameworkVersion: ">=2.0.0 <3.0.0"
 
 plugins:
   - serverless-plugin-typescript
@@ -26,7 +26,12 @@ functions:
   pullSourceCode:
     handler: src/lambda.repoToBucket
     memorySize: 128
-    description: Test endpoint to check contents of webhook that bitbucket does    
+    description: Clones a bitbucket repo into an S3 bucket 
+    environment:
+      BRANCHES: ${opt:branches}
+      BUCKET: ${opt:bucket}
+      REPO: ${opt:repo}
+
     events:
         - http:
             path: webhooks/bitbucket/
