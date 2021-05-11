@@ -22,7 +22,7 @@
     "@types/rimraf": "^3.0.0",
     "archiver": "^4.0.2",
     "aws-sdk": "^2.717.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "nodegit": "^0.26.5",
     "rimraf": "^3.0.2"
   }
